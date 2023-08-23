@@ -65,7 +65,7 @@ func (d *Date) UnmarshalJSON(b []byte) error {
 }
 
 func GetCollectionsByUsername(username string) (Collections, error) {
-	limit := 10
+	limit := 50
 	collections, err := getCollectionsByUsernameByPage(username, limit, 0)
 	if err != nil {
 		return Collections{}, err
