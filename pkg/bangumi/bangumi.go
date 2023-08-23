@@ -37,9 +37,10 @@ type Collection struct {
 }
 
 type Subject struct {
-	Id   int    `json:"id"`
-	Name string `json:"name"`
-	Date Date   `json:"date"`
+	Id     int    `json:"id"`
+	Name   string `json:"name"`
+	NameCN string `json:"name_cn"`
+	Date   Date   `json:"date"`
 }
 
 type Date struct {

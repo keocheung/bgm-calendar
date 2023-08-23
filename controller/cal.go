@@ -3,6 +3,7 @@ package controller
 import (
 	"fmt"
 	"net/http"
+	"os"
 	"regexp"
 	"time"
 
@@ -46,13 +47,16 @@ func Games(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 	var events []string
+	preferCNConfig := os.Getenv("BGM_CALENDAR_PREFER_CN_NAME")
+	preferCN := preferCNConfig == "true" || preferCNConfig == "1"
 	now := time.Now()
 	for _, collection := range collections.Data {
 		if collection.Subject.Date.Before(now) {
 			continue
 		}
 		date := collection.Subject.Date
-		event := fmt.Sprintf(eventTemplete, fmt.Sprintf("BANGUMI-SUBJECT-%d", collection.Subject.Id), date.Format("20060102"), collection.Subject.Name)
+		event := fmt.Sprintf(eventTemplete, fmt.Sprintf("BANGUMI-SUBJECT-%d", collection.Subject.Id),
+			date.Format("20060102"), getSubjectName(collection.Subject, preferCN))
 		events = append(events, event)
 	}
 	cal := calendarPrefix
@@ -61,4 +65,11 @@ func Games(w http.ResponseWriter, r *http.Request) {
 	}
 	cal += calendarSuffix
 	w.Write([]byte(cal))
+}
+
+func getSubjectName(subject bangumi.Subject, preferCN bool) string {
+	if subject.NameCN != "" && preferCN {
+		return subject.NameCN
+	}
+	return subject.Name
 }
