@@ -3,6 +3,7 @@ package bangumi
 import (
 	"encoding/json"
 	"fmt"
+	"os"
 	"strings"
 	"time"
 
@@ -46,7 +47,7 @@ func (d *Date) UnmarshalJSON(b []byte) error {
 
 func GetCollectionsByUsername(username string) (Collections, error) {
 	client := http.NewHTTPClient()
-	data, err := client.Get(fmt.Sprintf("%s/v0/users/%s/collections?subject_type=4&type=1&limit=50&offset=0", APIHost, username), map[string]string{
+	data, err := client.Get(fmt.Sprintf("https://%s/v0/users/%s/collections?subject_type=4&type=1&limit=50&offset=0", getAPIHost(), username), map[string]string{
 		"User-Agent": "keo/bgm-calendar/0.0.1alpha",
 	})
 	if err != nil {
@@ -57,4 +58,12 @@ func GetCollectionsByUsername(username string) (Collections, error) {
 		return Collections{}, err
 	}
 	return collections, nil
+}
+
+func getAPIHost() string {
+	apiHost := os.Getenv("BGM_CALENDAR_API_HOST")
+	if apiHost == "" {
+		apiHost = "api.bgm.tv"
+	}
+	return apiHost
 }

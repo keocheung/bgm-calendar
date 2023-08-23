@@ -45,7 +45,6 @@ func Games(w http.ResponseWriter, r *http.Request) {
 		http.Error(w, err.Error(), http.StatusInternalServerError)
 		return
 	}
-	fmt.Println(collections)
 	var events []string
 	now := time.Now()
 	for _, collection := range collections.Data {
