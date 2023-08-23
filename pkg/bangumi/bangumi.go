@@ -109,9 +109,7 @@ func getCollectionsByUsernameByPage(username string, limit, offset int) (Collect
 	}
 	u.RawQuery = query.Encode()
 	client := http.NewHTTPClient()
-	data, err := client.Get(u.String(), map[string]string{
-		"User-Agent": "keo/bgm-calendar/0.0.1alpha",
-	})
+	data, err := client.Get(u.String(), getHeaders())
 	if err != nil {
 		return Collections{}, err
 	}
@@ -128,4 +126,15 @@ func getAPIHost() string {
 		apiHost = "api.bgm.tv"
 	}
 	return apiHost
+}
+
+func getHeaders() map[string]string {
+	headers := map[string]string{
+		"User-Agent": "keo/bgm-calendar/0.0.1alpha",
+	}
+	accessToken := os.Getenv("BANGUMI_ACCESS_TOKEN")
+	if accessToken != "" {
+		headers["Authorization"] = fmt.Sprintf("Bearer %s", accessToken)
+	}
+	return headers
 }
