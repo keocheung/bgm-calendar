@@ -3,17 +3,33 @@ package bangumi
 import (
 	"encoding/json"
 	"fmt"
+	"net/url"
 	"os"
 	"strings"
+	"sync"
 	"time"
 
 	"bgm-calendar/util/http"
 )
 
-const APIHost = "https://api.bgm.tv"
+const (
+	subjectTypeBook  subjectType = 1
+	subjectTypeAnime subjectType = 2
+	subjectTypeMusic subjectType = 3
+	subjectTypeGame  subjectType = 4
+	subjectTypeReal  subjectType = 5
+
+	collectionTypeToWatch   collectionType = 1
+	collectionTypeWatched   collectionType = 2
+	collectionTypeWatching  collectionType = 3
+	collectionTypeSuspended collectionType = 4
+	collectionTypeAbandoned collectionType = 5
+)
 
 type Collections struct {
-	Data []Collection `json:"data"`
+	Data  []Collection `json:"data"`
+	Total int          `json:"total"`
+	Limit int          `json:"limit"`
 }
 
 type Collection struct {
@@ -29,6 +45,9 @@ type Subject struct {
 type Date struct {
 	time.Time
 }
+
+type subjectType int
+type collectionType int
 
 func (d *Date) UnmarshalJSON(b []byte) error {
 	if string(b) == "null" {
@@ -46,8 +65,51 @@ func (d *Date) UnmarshalJSON(b []byte) error {
 }
 
 func GetCollectionsByUsername(username string) (Collections, error) {
+	limit := 10
+	collections, err := getCollectionsByUsernameByPage(username, limit, 0)
+	if err != nil {
+		return Collections{}, err
+	}
+	if collections.Total <= limit {
+		return collections, nil
+	}
+	batches := collections.Total / limit
+	wg := sync.WaitGroup{}
+	wg.Add(batches)
+	var errs []error
+	for i := 0; i < batches; i++ {
+		go func(offset int) {
+			defer wg.Done()
+			subCollections, err := getCollectionsByUsernameByPage(username, limit, offset)
+			if err != nil {
+				errs = append(errs, err)
+				return
+			}
+			collections.Data = append(collections.Data, subCollections.Data...)
+		}((i + 1) * limit)
+	}
+	wg.Wait()
+	if len(errs) > 0 {
+		return Collections{}, errs[0]
+	}
+	return collections, nil
+}
+
+func getCollectionsByUsernameByPage(username string, limit, offset int) (Collections, error) {
+	u := url.URL{
+		Scheme: "https",
+		Host:   getAPIHost(),
+		Path:   fmt.Sprintf("/v0/users/%s/collections", username),
+	}
+	query := url.Values{
+		"subject_type": []string{fmt.Sprintf("%d", subjectTypeGame)},
+		"type":         []string{fmt.Sprintf("%d", collectionTypeToWatch)},
+		"limit":        []string{fmt.Sprintf("%d", limit)},
+		"offset":       []string{fmt.Sprintf("%d", offset)},
+	}
+	u.RawQuery = query.Encode()
 	client := http.NewHTTPClient()
-	data, err := client.Get(fmt.Sprintf("https://%s/v0/users/%s/collections?subject_type=4&type=1&limit=50&offset=0", getAPIHost(), username), map[string]string{
+	data, err := client.Get(u.String(), map[string]string{
 		"User-Agent": "keo/bgm-calendar/0.0.1alpha",
 	})
 	if err != nil {

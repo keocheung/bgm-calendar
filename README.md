@@ -16,12 +16,16 @@ services:
     ports:
       - 8080:8080
     environments:
-      - BGM_CALENDAR_PORT=8080            # Optional
-      - BGM_CALENDAR_API_HOST=api.bgm.tv  # Optional
+      - BGM_CALENDAR_PORT=8080               # Optional. Default is 8080
+      - BGM_CALENDAR_API_HOST=api.bgm.tv     # Optional. Default is api.bgm.tv
+      - HTTP_PROXY=http://127.0.0.1:9090     # Optional. Default is empty
+      - HTTPS_PROXY=http://127.0.0.1:9090    # Optional. Default is empty
+      - NO_PROXY=example.com,192.168.0.0/16  # Optional. Default is empty
     restart: unless-stopped
 ```
 
 ## Usage
+### 生成「想玩的游戏」的 ics 日历：
 ```shell
 curl http://localhost:8080/users/{username}/games.ics
 ```

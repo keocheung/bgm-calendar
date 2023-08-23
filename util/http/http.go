@@ -3,7 +3,7 @@ package http
 import (
 	"bytes"
 	"fmt"
-	"io/ioutil"
+	"io"
 	"net/http"
 )
 
@@ -12,13 +12,18 @@ type HTTPClient interface {
 	Post(url string, body []byte, headers map[string]string) ([]byte, error)
 }
 
-var client = &http.Client{}
-
 func NewHTTPClient() HTTPClient {
-	return &httpClient{}
+	return &httpClient{
+		client: &http.Client{
+			Transport: &http.Transport{
+				Proxy: http.ProxyFromEnvironment,
+			},
+		},
+	}
 }
 
 type httpClient struct {
+	client *http.Client
 }
 
 func (c *httpClient) Get(url string, headers map[string]string) ([]byte, error) {
@@ -29,12 +34,12 @@ func (c *httpClient) Get(url string, headers map[string]string) ([]byte, error) 
 	for key, header := range headers {
 		req.Header.Set(key, header)
 	}
-	rsp, err := client.Do(req)
+	rsp, err := c.client.Do(req)
 	if err != nil {
 		return nil, fmt.Errorf("get %s error: %v", url, err)
 	}
 	defer rsp.Body.Close()
-	body, err := ioutil.ReadAll(rsp.Body)
+	body, err := io.ReadAll(rsp.Body)
 	if err != nil {
 		return nil, fmt.Errorf("get %s error: %v", url, err)
 	}
@@ -52,12 +57,12 @@ func (c *httpClient) Post(url string, body []byte, headers map[string]string) ([
 	for key, header := range headers {
 		req.Header.Set(key, header)
 	}
-	rsp, err := client.Do(req)
+	rsp, err := c.client.Do(req)
 	if err != nil {
 		return nil, fmt.Errorf("post %s error: %v", url, err)
 	}
 	defer rsp.Body.Close()
-	rspBody, err := ioutil.ReadAll(rsp.Body)
+	rspBody, err := io.ReadAll(rsp.Body)
 	if err != nil {
 		return nil, fmt.Errorf("post %s error: %v", url, err)
 	}
