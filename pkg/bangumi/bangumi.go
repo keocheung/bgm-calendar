@@ -73,7 +73,7 @@ func GetCollectionsByUsername(username string) (Collections, error) {
 	if collections.Total <= limit {
 		return collections, nil
 	}
-	batches := collections.Total / limit
+	batches := (collections.Total - 1) / limit
 	wg := sync.WaitGroup{}
 	wg.Add(batches)
 	var errs []error
