@@ -121,7 +121,7 @@ func getCollectionsByUsernameByPage(username string, limit, offset int) (Collect
 }
 
 func getAPIHost() string {
-	apiHost := os.Getenv("BGM_CALENDAR_API_HOST")
+	apiHost := os.Getenv("BANGUMI_API_HOST")
 	if apiHost == "" {
 		apiHost = "api.bgm.tv"
 	}

@@ -17,7 +17,7 @@ services:
       - 8080:8080
     environments:
       - BGM_CALENDAR_PORT=8080               # Optional. Default is 8080
-      - BGM_CALENDAR_API_HOST=api.bgm.tv     # Optional. Default is api.bgm.tv
+      - BANGUMI_API_HOST=api.bgm.tv          # Optional. Default is api.bgm.tv
       - BANGUMI_ACCESS_TOKEN=asd123          # Optional. Default is empty. Create here: https://next.bgm.tv/demo/access-token
       - HTTP_PROXY=http://127.0.0.1:9090     # Optional. Default is empty
       - HTTPS_PROXY=http://127.0.0.1:9090    # Optional. Default is empty
