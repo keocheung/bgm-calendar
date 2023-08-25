@@ -15,7 +15,7 @@ services:
     network_mode: bridge
     ports:
       - 8080:8080
-    environments:
+    environment:
       - BGM_CALENDAR_PORT=8080               # Optional. Default is 8080
       - BGM_CALENDAR_PREFER_CN_NAME=1        # Optional. Default is false / 0
       - BANGUMI_API_HOST=api.bgm.tv          # Optional. Default is api.bgm.tv
