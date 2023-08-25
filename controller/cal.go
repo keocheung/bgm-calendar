@@ -49,9 +49,9 @@ func Games(w http.ResponseWriter, r *http.Request) {
 	var events []string
 	preferCNConfig := os.Getenv("BGM_CALENDAR_PREFER_CN_NAME")
 	preferCN := preferCNConfig == "true" || preferCNConfig == "1"
-	now := time.Now()
+	startTime := time.Now().AddDate(0, -30, 0)
 	for _, collection := range collections.Data {
-		if collection.Subject.Date.Before(now) {
+		if collection.Subject.Date.Before(startTime) {
 			continue
 		}
 		date := collection.Subject.Date
