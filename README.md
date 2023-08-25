@@ -32,9 +32,10 @@ go install github.com/keocheung/bgm-calendar@latest
 ### Build From Source
 ```shell
 go build -o bgm-calendar .
+```
 
 ## Usage
-### 生成「想玩的游戏」的 ics 日历：
+### 生成「想玩的游戏」的 ics 日历
 ```shell
 curl http://localhost:8080/users/{username}/games.ics
 ```
