@@ -1,6 +1,6 @@
 # bgm-calendar
 
-### A custom iCalendar generator for bgm.tv
+A custom iCalendar generator for bgm.tv
 
 ## Install
 ### Docker Compose
@@ -25,6 +25,13 @@ services:
       - NO_PROXY=example.com,192.168.0.0/16  # Optional. Default is empty
     restart: unless-stopped
 ```
+### Go Install
+```shell
+go install github.com/keocheung/bgm-calendar@latest
+```
+### Build From Source
+```shell
+go build -o bgm-calendar .
 
 ## Usage
 ### 生成「想玩的游戏」的 ics 日历：
