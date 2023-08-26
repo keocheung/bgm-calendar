@@ -8,7 +8,7 @@ A custom iCalendar generator for bgm.tv
 version: '3'
 services:
   bgm-calendar:
-    image: ghcr.io/keocheung/bgm-calendar
+    image: keocheung/bgm-calendar           # Or ghcr.io/keocheung/bgm-calendar
     container_name: bgm-calendar
     volumes:
       - /etc/localtime:/etc/localtime:ro
