@@ -7,34 +7,19 @@ import (
 	"regexp"
 	"time"
 
+	"bgm-calendar/meta"
 	"bgm-calendar/pkg/bangumi"
+
+	ics "github.com/arran4/golang-ical"
 )
 
 const (
-	calendarPrefix = `BEGIN:VCALENDAR
-VERSION:2.0
-PRODID:bgm-calendar
-CALSCALE:GREGORIAN
-X-WR-CALNAME:想玩的游戏
-X-APPLE-LANGUAGE:zh
-X-APPLE-REGION:CN
-`
-	calendarSuffix = "END:VCALENDAR"
-	eventTemplete  = `BEGIN:VEVENT
-DTSTAMP;VALUE=DATE:19760401
-UID:%s
-DTSTART;VALUE=DATE:%s
-CLASS:PUBLIC
-SUMMARY;LANGUAGE=zh_CN:%s
-TRANSP:TRANSPARENT
-CATEGORIES:想玩的游戏
-END:VEVENT
-`
+	calendarGames = "想玩的游戏"
 )
 
 var gamesPathPattern = regexp.MustCompile("^/users/(.+)/games.ics$")
 
-func Games(w http.ResponseWriter, r *http.Request) {
+func Users(w http.ResponseWriter, r *http.Request) {
 	matches := gamesPathPattern.FindStringSubmatch(r.URL.Path)
 	if matches == nil {
 		http.NotFound(w, r)
@@ -46,25 +31,29 @@ func Games(w http.ResponseWriter, r *http.Request) {
 		http.Error(w, err.Error(), http.StatusInternalServerError)
 		return
 	}
-	var events []string
+	cal := generateGamesCal(collections.Data)
+	w.Write([]byte(cal))
+}
+
+func generateGamesCal(collections []bangumi.Collection) string {
+
+	cal := ics.NewCalendar()
+	cal.SetMethod(ics.MethodRequest)
+	cal.SetName(calendarGames)
+	cal.SetProductId(meta.UserAgent)
 	preferCNConfig := os.Getenv("BGM_CALENDAR_PREFER_CN_NAME")
-	preferCN := preferCNConfig == "true" || preferCNConfig == "1"
+	preferCN := preferCNConfig == "1" || preferCNConfig == "true"
 	startTime := time.Now().AddDate(0, -1, 0)
-	for _, collection := range collections.Data {
+	for _, collection := range collections {
 		if collection.Subject.Date.Before(startTime) {
 			continue
 		}
-		date := collection.Subject.Date
-		event := fmt.Sprintf(eventTemplete, fmt.Sprintf("BANGUMI-SUBJECT-%d", collection.Subject.Id),
-			date.Format("20060102"), getSubjectName(collection.Subject, preferCN))
-		events = append(events, event)
+		event := cal.AddEvent(fmt.Sprintf("BANGUMI-SUBJECT-%d", collection.Subject.Id))
+		event.SetAllDayStartAt(collection.Subject.Date.Time)
+		event.SetSummary(getSubjectName(collection.Subject, preferCN))
+		event.SetProperty(ics.ComponentPropertyCategories, calendarGames)
 	}
-	cal := calendarPrefix
-	for _, event := range events {
-		cal += event
-	}
-	cal += calendarSuffix
-	w.Write([]byte(cal))
+	return cal.Serialize()
 }
 
 func getSubjectName(subject bangumi.Subject, preferCN bool) string {

@@ -1,3 +1,5 @@
 module bgm-calendar
 
 go 1.20
+
+require github.com/arran4/golang-ical v0.1.0

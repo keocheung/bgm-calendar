@@ -12,7 +12,7 @@ import (
 
 func main() {
 	logger.Infof("bgm-calendar %s", meta.Version)
-	http.HandleFunc("/users/", controller.Games)
+	http.HandleFunc("/users/", controller.Users)
 	err := http.ListenAndServe(":"+getPort(), nil)
 	if err != nil {
 		log.Fatal(err)
