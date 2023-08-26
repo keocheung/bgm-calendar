@@ -9,6 +9,7 @@ import (
 	"sync"
 	"time"
 
+	"bgm-calendar/meta"
 	"bgm-calendar/util/http"
 )
 
@@ -131,7 +132,7 @@ func getAPIHost() string {
 
 func getHeaders() map[string]string {
 	headers := map[string]string{
-		"User-Agent": "keo/bgm-calendar/0.0.1alpha",
+		"User-Agent": meta.UserAgent,
 	}
 	accessToken := os.Getenv("BANGUMI_ACCESS_TOKEN")
 	if accessToken != "" {

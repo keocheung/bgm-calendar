@@ -6,9 +6,12 @@ import (
 	"os"
 
 	"bgm-calendar/controller"
+	"bgm-calendar/meta"
+	"bgm-calendar/util/logger"
 )
 
 func main() {
+	logger.Infof("bgm-calendar %s", meta.Version)
 	http.HandleFunc("/users/", controller.Games)
 	err := http.ListenAndServe(":"+getPort(), nil)
 	if err != nil {
