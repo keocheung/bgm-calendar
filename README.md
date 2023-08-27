@@ -25,13 +25,21 @@ services:
       - NO_PROXY=example.com,192.168.0.0/16  # Optional. Default is empty
     restart: unless-stopped
 ```
-### Go Install
+### Go install
 ```shell
 go install github.com/keocheung/bgm-calendar@latest
 ```
-### Build From Source
+### Build from source
 ```shell
+git clone https://github.com/keocheung/bgm-calendar
+cd bgm-calendar
 go build -o bgm-calendar .
+```
+### Build Docker image from source
+```shell
+git clone https://github.com/keocheung/bgm-calendar
+cd bgm-calendar
+docker build -t bgm-calendar:latest .
 ```
 
 ## Usage
