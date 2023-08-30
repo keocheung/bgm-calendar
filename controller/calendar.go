@@ -32,6 +32,7 @@ func Users(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 	cal := generateGamesCal(collections.Data)
+	w.Header().Set("Content-Type", "text/calendar; charset=utf-8")
 	w.Write([]byte(cal))
 }
 

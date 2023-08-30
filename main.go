@@ -13,7 +13,9 @@ import (
 func main() {
 	logger.Infof("bgm-calendar %s", meta.Version)
 	http.HandleFunc("/users/", controller.Users)
-	err := http.ListenAndServe(":"+getPort(), nil)
+	port := getPort()
+	logger.Infof("bgm-calendar listening on port %s", port)
+	err := http.ListenAndServe(":"+port, nil)
 	if err != nil {
 		log.Fatal(err)
 	}
