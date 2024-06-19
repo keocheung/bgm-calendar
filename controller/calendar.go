@@ -2,6 +2,7 @@ package controller
 
 import (
 	"fmt"
+	"html"
 	"net/http"
 	"os"
 	"regexp"
@@ -58,8 +59,9 @@ func generateGamesCal(collections []bangumi.Collection) string {
 }
 
 func getSubjectName(subject bangumi.Subject, preferCN bool) string {
+	name := subject.Name
 	if subject.NameCN != "" && preferCN {
-		return subject.NameCN
+		name = subject.NameCN
 	}
-	return subject.Name
+	return html.UnescapeString(name)
 }
