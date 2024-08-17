@@ -12,7 +12,7 @@ import (
 )
 
 func main() {
-	logger.Infof("bgm-calendar %s", meta.Version)
+	logger.Infof("bgm-calendar %s (BuildTime: %s)", meta.Version, meta.BuildTime)
 	http.HandleFunc("/users/", controller.Users)
 	port := getPort()
 	logger.Infof("bgm-calendar listening on port %s", port)

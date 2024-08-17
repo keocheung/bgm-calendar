@@ -6,6 +6,7 @@ var (
 	Version = "v0.0.0"
 	// UserAgent is the User-Agent generated from Version
 	UserAgent string
+	BuildTime string
 )
 
 func init() {
